@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="TaskDeadlineManager.vcxproj" />
+  <Project Path="TaskDeadlineManager.vcxproj" Id="3c7c460d-924b-43ea-9438-9ac8762bcbb9" />
 </Solution>

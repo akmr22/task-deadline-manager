@@ -2,39 +2,55 @@
 #include <string>
 #include <vector>
 
+//課題1件分のデータをまとめる型
+struct Task
+{
+	std::string name;//関数名
+	std::string deadline;//提出期限
+};
+
+
+
 int main()
 {
-    std::vector<std::string> tasks;  // 課題名をためておくリスト
-    std::string input;               // 1回分の入力
 
-    std::cout << "課題名を入力してください(何も入力せずEnterで終了)" << std::endl;
+	std::vector<Task> tasks;	//課題名をためておくリスト
+	std::string input;	//1回分の入力
 
-    // 入力を繰り返す
-    while (true)
-    {
-        std::cout << "> ";
-        std::getline(std::cin, input);
+	std::cout << "課題名を入力してください(何も入力せずEnterで終了)" << std::endl;
+	
+	while (true)
+	{
+		std::cout << "課題名 >";
+		std::getline(std::cin, input);
 
-        if (input.empty())   // 空ならループを抜ける
-        {
-            break;
-        }
+		if (input.empty())	//空ならループを抜ける
+		{
+			break;
+		}
 
-        tasks.push_back(input);  // リストの末尾に追加
-    }
+		Task task;
+		task.name = input;
+		//期限を入力してtaskに入れる
+		std::cout << "提出期限(例: 2026/10/20) >";
+		std::getline(std::cin, task.deadline);
 
-    // 一覧を表示
-    std::cout << "\n--- 課題一覧 ---" << std::endl;
+		tasks.push_back(task);
+	}
 
-    if (tasks.empty())
-    {
-        std::cout << "登録された課題はありません。" << std::endl;
-    }
+	std::cout << "\n--- 課題一覧 ---" << std::endl;
 
-    for (size_t i = 0; i < tasks.size(); i++)
-    {
-        std::cout << i + 1 << ". " << tasks[i] << std::endl;
-    }
+	if (tasks.empty())
+	{
+		std::cout << "登録された課題はありません。" << std::endl;
+	}
 
-    return 0;
+	for (size_t i = 0; i < tasks.size(); i++)
+	{
+		std::cout << i + 1 << ". " << tasks[i].name
+			<< "(期限: "<<tasks[i].deadline << ")" << std::endl;
+	}
+
+
+	return 0;
 }
