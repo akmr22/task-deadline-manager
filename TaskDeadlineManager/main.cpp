@@ -139,6 +139,77 @@ std::vector<Task> loadTasks()
 	return tasks;
 }
 
+//数字を1つ読み込む関数　数字でなければ-1を返す
+int readNumber()
+{
+	std::string text;
+	std::getline(std::cin, text);
+
+	try
+	{
+		size_t pos = 0;
+		int number = std::stoi(text, &pos);
+
+		if (pos != text.size()) // "3a"のように後ろに余計な文字がある
+		{
+			return -1;
+		}
+		return number;
+	}
+	catch (...)	//数字に変換できなかった
+	{
+		return -1;
+	}
+}
+
+//"2026/10/20" の形で、実在する日付かを調べる関数
+bool isValidDate(const std::string& date)
+{
+	//長さが10文字で、5文字と8文字目が'/'か
+	if (date.size() != 10 || date[4] != '/' || date[7] != '/')
+	{
+		return false;
+	}
+
+	//　'/'以外が全部数字か
+	for (size_t i = 0; i < date.size(); i++)
+	{
+		if (i == 4 || i == 7)
+		{
+			continue;
+		}
+		if (date[i]<'0'||date[i]>'9')
+		{
+			return false;
+		}
+	}
+
+	int year = std::stoi(date.substr(0, 4));
+	int month = std::stoi(date.substr(5, 2));
+	int day = std::stoi(date.substr(8, 2));
+
+	//月が1～12か
+	if (month < 1 || month>12)
+	{
+		return false;
+	}
+
+	//その月に存在する日か(うるう月も考える)
+	int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+	if (isLeapYear)
+	{
+		daysInMonth[1] = 29;
+	}
+
+	if (day <1 || day>daysInMonth[month - 1])
+	{
+		return false;
+	}
+
+	return true;
+}
+
 int main()
 {
 
@@ -164,10 +235,24 @@ int main()
 
 			std::cout << "課題名 >";
 			std::getline(std::cin, task.name);
+			if (!task.name.empty())
+			{
+				break;
+			}
+			std::cout << "課題名を入力してください。" << std::endl;
 
-			std::cout << "提出期限(例: 2026/10/20) >";
-			std::getline(std::cin, task.deadline);
-
+			while (true)
+			{
+				std::cout << "提出期限(例: 2026/10/20) >";
+				std::getline(std::cin, task.deadline);
+				
+				if (isValidDate(task.deadline))
+				{
+					break;
+				}
+				std::cout << "2026/10/20 の形で、正しい日付を入力してください。" << std::endl;
+			}
+	
 			tasks.push_back(task);
 			std::sort(tasks.begin(), tasks.end(), compareDeadline); //期限順に並べ替え
 			saveTasks(tasks);
@@ -188,8 +273,7 @@ int main()
 			{
 				showTasks(tasks); //一覧表示
 				std::cout << "完了にする番号 >";
-				std::getline(std::cin, input);
-				int num = std::stoi(input); //文字を数字に変換
+				int num = readNumber();
 
 				if (num <1 || num > static_cast<int>(tasks.size()))
 				{
@@ -215,8 +299,7 @@ int main()
 			{
 				showTasks(tasks); //一覧表示
 				std::cout << "削除する番号 >";
-				std::getline(std::cin, input);
-				int num = std::stoi(input);
+				int num = readNumber();
 
 				if (num < 1 || num > static_cast<int>(tasks.size()))
 				{
