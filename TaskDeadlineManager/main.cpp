@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <ctime>
 
 //課題1件分のデータをまとめる型
 struct Task
@@ -9,6 +11,39 @@ struct Task
 	std::string deadline;//提出期限
 	bool done = false; //完了したかどうか(最初は未完了)
 };
+
+bool compareDeadline(const Task& a, const Task& b)
+{
+	return a.deadline < b.deadline;
+}
+
+int daysLeft(const std::string& deadline)
+{
+	// "2026/10/20"　を年・月・日に分ける
+	int year = std::stoi(deadline.substr(0, 4));
+	int month = std::stoi(deadline.substr(5, 2));
+	int day = std::stoi(deadline.substr(8, 2));
+
+	// 期限の日付を作る
+	std::tm deadlineTm = {};
+	deadlineTm.tm_year = year - 1900;
+	deadlineTm.tm_mon = month - 1;
+	deadlineTm.tm_mday = day;
+	std::time_t deadlineTime = std::mktime(&deadlineTm);
+
+	// 今日の日付を作る（時刻は0時0分0秒にそろえる）
+	std::time_t now = std::time(nullptr);
+	std::tm todayTm = {};
+	localtime_s(&todayTm, &now);
+	todayTm.tm_hour = 0;
+	todayTm.tm_min = 0;
+	todayTm.tm_sec = 0;
+	std::time_t todayTime = std::mktime(&todayTm);
+
+	// 差を秒で出して、1日の秒数で割る
+	double diff = std::difftime(deadlineTime, todayTime);
+	return static_cast<int>(diff / (60 * 60 * 24));
+}
 
 //課題の一覧を表示する関数
 void showTasks(const std::vector<Task>& tasks)
@@ -34,7 +69,29 @@ void showTasks(const std::vector<Task>& tasks)
 		}
 
 		std::cout << tasks[i].name
-			<< "(期限: " << tasks[i].deadline << "(" << std::endl;
+			<< "(期限: " << tasks[i].deadline
+			<< " / あと" << "日)" << std::endl;
+
+		// 完了していない課題の残り日数を出す
+		if (!tasks[i].done)
+		{
+			int days = daysLeft(tasks[i].deadline);
+
+			if (days > 0)
+			{
+				std::cout << " / あと" << days << "日";
+			}
+			else if (days == 0)
+			{
+				std::cout << " / 今日まで!";
+			}
+			else
+			{
+				std::cout << " / " << -days << "日超過";
+			}
+		}
+
+		std::cout << ")" << std::endl;
 	}
 }
 
@@ -68,6 +125,7 @@ int main()
 			std::getline(std::cin, task.deadline);
 
 			tasks.push_back(task);
+			std::sort(tasks.begin(), tasks.end(), compareDeadline); //期限順に並べ替え
 			std::cout << "追加しました。" << std::endl;
 		}
 		else if (input== "2")
