@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <fstream>
 
 //課題1件分のデータをまとめる型
 struct Task
@@ -95,10 +96,53 @@ void showTasks(const std::vector<Task>& tasks)
 	}
 }
 
+void saveTasks(const std::vector<Task>& tasks)
+{
+	std::ofstream file("tasks.txt");
+
+	if (!file)
+	{
+		std::cout << "保存に失敗しました。" << std::endl;
+		return;
+	}
+
+	for (size_t i = 0; i < tasks.size(); i++)
+	{
+		file << tasks[i].name << "\n";
+		file << tasks[i].deadline << "\n";
+		file << tasks[i].done << "\n";
+	}
+}
+
+std::vector<Task> loadTasks()
+{
+	std::vector<Task> tasks;
+	std::ifstream file("tasks.txt");
+
+	if (!file)
+	{
+		return tasks;	// ファイルがない(初回起動)なら空のまま返す
+	}
+
+	Task task;
+	std::string doneText;
+
+	// 1件=3行ずつ読む。課題名が読めなくなったら終わり
+	while (std::getline(file,task.name))
+	{
+		std::getline(file, task.deadline);
+		std::getline(file, doneText);
+		task.done = (doneText == "1");
+
+		tasks.push_back(task);
+	}
+	return tasks;
+}
+
 int main()
 {
 
-	std::vector<Task> tasks;	//課題名をためておくリスト
+	std::vector<Task> tasks = loadTasks();	//課題名のリスト 起動時にファイルから読み込む
 	std::string input;	//1回分の入力
 
 	//メニューを繰り返す
@@ -126,6 +170,7 @@ int main()
 
 			tasks.push_back(task);
 			std::sort(tasks.begin(), tasks.end(), compareDeadline); //期限順に並べ替え
+			saveTasks(tasks);
 			std::cout << "追加しました。" << std::endl;
 		}
 		else if (input== "2")
@@ -153,6 +198,7 @@ int main()
 				else
 				{
 					tasks[num - 1].done = true;
+					saveTasks(tasks);
 					std::cout << tasks[num - 1].name << " を完了にしました。" << std::endl;
 				}
 			}
@@ -180,6 +226,7 @@ int main()
 				{
 					std::string name = tasks[num - 1].name; //消す前に名前を取っておく
 					tasks.erase(tasks.begin() + (num - 1));
+					saveTasks(tasks);
 					std::cout << name << " を削除しました。" << std::endl;
 				}
 			}
