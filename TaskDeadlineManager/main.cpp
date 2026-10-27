@@ -5,34 +5,36 @@
 #include <ctime>
 #include <fstream>
 
-//èª²é¡Œ1ä»¶åˆ†ã®ãƒ‡ãƒ¼ã‚¿ã‚’ã¾ã¨ã‚ã‚‹å‹
+//‰Û‘è1Œ•ª‚Ìƒf[ƒ^‚ğ‚Ü‚Æ‚ß‚éŒ^
 struct Task
 {
-	std::string name;//é–¢æ•°å
-	std::string deadline;//æå‡ºæœŸé™
-	bool done = false; //å®Œäº†ã—ãŸã‹ã©ã†ã‹(æœ€åˆã¯æœªå®Œäº†)
+	std::string name;//‰Û‘è–¼
+	std::string deadline;//’ñoŠúŒÀ
+	bool done = false; //Š®—¹‚µ‚½‚©‚Ç‚¤‚©(Å‰‚Í–¢Š®—¹)
 };
 
+//ŠúŒÀ‚ª‘‚¢‚Ù‚¤‚ğ‘O‚É‚·‚é‚½‚ß‚Ì”ä‚×•û
 bool compareDeadline(const Task& a, const Task& b)
 {
 	return a.deadline < b.deadline;
 }
 
+//ŠúŒÀ‚Ü‚Å‚ ‚Æ‰½“ú‚©‚ğŒvZ‚·‚éŠÖ”
 int daysLeft(const std::string& deadline)
 {
-	// "2026/10/20"ã€€ã‚’å¹´ãƒ»æœˆãƒ»æ—¥ã«åˆ†ã‘ã‚‹
+	// "2026/10/20"@‚ğ”NEŒE“ú‚É•ª‚¯‚é
 	int year = std::stoi(deadline.substr(0, 4));
 	int month = std::stoi(deadline.substr(5, 2));
 	int day = std::stoi(deadline.substr(8, 2));
 
-	// æœŸé™ã®æ—¥ä»˜ã‚’ä½œã‚‹
+	// ŠúŒÀ‚Ì“ú•t‚ğì‚é
 	std::tm deadlineTm = {};
 	deadlineTm.tm_year = year - 1900;
 	deadlineTm.tm_mon = month - 1;
 	deadlineTm.tm_mday = day;
 	std::time_t deadlineTime = std::mktime(&deadlineTm);
 
-	// ä»Šæ—¥ã®æ—¥ä»˜ã‚’ä½œã‚‹ï¼ˆæ™‚åˆ»ã¯0æ™‚0åˆ†0ç§’ã«ãã‚ãˆã‚‹ï¼‰
+	// ¡“ú‚Ì“ú•t‚ğì‚éi‚Í00•ª0•b‚É‚»‚ë‚¦‚éj
 	std::time_t now = std::time(nullptr);
 	std::tm todayTm = {};
 	localtime_s(&todayTm, &now);
@@ -41,105 +43,12 @@ int daysLeft(const std::string& deadline)
 	todayTm.tm_sec = 0;
 	std::time_t todayTime = std::mktime(&todayTm);
 
-	// å·®ã‚’ç§’ã§å‡ºã—ã¦ã€1æ—¥ã®ç§’æ•°ã§å‰²ã‚‹
+	// ·‚ğ•b‚Åo‚µ‚ÄA1“ú‚Ì•b”‚ÅŠ„‚é
 	double diff = std::difftime(deadlineTime, todayTime);
 	return static_cast<int>(diff / (60 * 60 * 24));
 }
 
-//èª²é¡Œã®ä¸€è¦§ã‚’è¡¨ç¤ºã™ã‚‹é–¢æ•°
-void showTasks(const std::vector<Task>& tasks)
-{
-	std::cout << "\n--- èª²é¡Œä¸€è¦§ ---" << std::endl;
-	
-	if (tasks.empty())
-	{
-		std::cout << "ç™»éŒ²ã•ã‚ŒãŸèª²é¡Œã¯ã‚ã‚Šã¾ã›ã‚“ã€‚" << std::endl;
-	}
-
-	for (size_t i = 0; i < tasks.size(); i++)
-	{
-		std::cout << i + 1 << ". ";
-
-		if (tasks[i].done)
-		{
-			std::cout << "[æ¸ˆ] ";
-		}
-		else
-		{
-			std::cout << "[æœª] ";
-		}
-
-		std::cout << tasks[i].name
-			<< "(æœŸé™: " << tasks[i].deadline
-			<< " / ã‚ã¨" << "æ—¥)" << std::endl;
-
-		// å®Œäº†ã—ã¦ã„ãªã„èª²é¡Œã®æ®‹ã‚Šæ—¥æ•°ã‚’å‡ºã™
-		if (!tasks[i].done)
-		{
-			int days = daysLeft(tasks[i].deadline);
-
-			if (days > 0)
-			{
-				std::cout << " / ã‚ã¨" << days << "æ—¥";
-			}
-			else if (days == 0)
-			{
-				std::cout << " / ä»Šæ—¥ã¾ã§!";
-			}
-			else
-			{
-				std::cout << " / " << -days << "æ—¥è¶…é";
-			}
-		}
-
-		std::cout << ")" << std::endl;
-	}
-}
-
-void saveTasks(const std::vector<Task>& tasks)
-{
-	std::ofstream file("tasks.txt");
-
-	if (!file)
-	{
-		std::cout << "ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸã€‚" << std::endl;
-		return;
-	}
-
-	for (size_t i = 0; i < tasks.size(); i++)
-	{
-		file << tasks[i].name << "\n";
-		file << tasks[i].deadline << "\n";
-		file << tasks[i].done << "\n";
-	}
-}
-
-std::vector<Task> loadTasks()
-{
-	std::vector<Task> tasks;
-	std::ifstream file("tasks.txt");
-
-	if (!file)
-	{
-		return tasks;	// ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„(åˆå›èµ·å‹•)ãªã‚‰ç©ºã®ã¾ã¾è¿”ã™
-	}
-
-	Task task;
-	std::string doneText;
-
-	// 1ä»¶=3è¡Œãšã¤èª­ã‚€ã€‚èª²é¡ŒåãŒèª­ã‚ãªããªã£ãŸã‚‰çµ‚ã‚ã‚Š
-	while (std::getline(file,task.name))
-	{
-		std::getline(file, task.deadline);
-		std::getline(file, doneText);
-		task.done = (doneText == "1");
-
-		tasks.push_back(task);
-	}
-	return tasks;
-}
-
-//æ•°å­—ã‚’1ã¤èª­ã¿è¾¼ã‚€é–¢æ•°ã€€æ•°å­—ã§ãªã‘ã‚Œã°-1ã‚’è¿”ã™
+//”š‚ğ1‚Â“Ç‚İ‚ŞŠÖ”@”š‚Å‚È‚¯‚ê‚Î-1‚ğ•Ô‚·
 int readNumber()
 {
 	std::string text;
@@ -150,28 +59,28 @@ int readNumber()
 		size_t pos = 0;
 		int number = std::stoi(text, &pos);
 
-		if (pos != text.size()) // "3a"ã®ã‚ˆã†ã«å¾Œã‚ã«ä½™è¨ˆãªæ–‡å­—ãŒã‚ã‚‹
+		if (pos != text.size()) // "3a"‚Ì‚æ‚¤‚ÉŒã‚ë‚É—]Œv‚È•¶š‚ª‚ ‚é
 		{
 			return -1;
 		}
 		return number;
 	}
-	catch (...)	//æ•°å­—ã«å¤‰æ›ã§ããªã‹ã£ãŸ
+	catch (...)	//”š‚É•ÏŠ·‚Å‚«‚È‚©‚Á‚½
 	{
 		return -1;
 	}
 }
 
-//"2026/10/20" ã®å½¢ã§ã€å®Ÿåœ¨ã™ã‚‹æ—¥ä»˜ã‹ã‚’èª¿ã¹ã‚‹é–¢æ•°
+//"2026/10/20" ‚ÌŒ`‚ÅAÀİ‚·‚é“ú•t‚©‚ğ’²‚×‚éŠÖ”
 bool isValidDate(const std::string& date)
 {
-	//é•·ã•ãŒ10æ–‡å­—ã§ã€5æ–‡å­—ã¨8æ–‡å­—ç›®ãŒ'/'ã‹
+	//’·‚³‚ª10•¶š‚ÅA5•¶š‚Æ8•¶š–Ú‚ª'/'‚©
 	if (date.size() != 10 || date[4] != '/' || date[7] != '/')
 	{
 		return false;
 	}
 
-	//ã€€'/'ä»¥å¤–ãŒå…¨éƒ¨æ•°å­—ã‹
+	//@'/'ˆÈŠO‚ª‘S•””š‚©
 	for (size_t i = 0; i < date.size(); i++)
 	{
 		if (i == 4 || i == 7)
@@ -188,13 +97,13 @@ bool isValidDate(const std::string& date)
 	int month = std::stoi(date.substr(5, 2));
 	int day = std::stoi(date.substr(8, 2));
 
-	//æœˆãŒ1ï½12ã‹
+	//Œ‚ª1`12‚©
 	if (month < 1 || month>12)
 	{
 		return false;
 	}
 
-	//ãã®æœˆã«å­˜åœ¨ã™ã‚‹æ—¥ã‹(ã†ã‚‹ã†æœˆã‚‚è€ƒãˆã‚‹)
+	//‚»‚ÌŒ‚É‘¶İ‚·‚é“ú‚©(‚¤‚é‚¤”N‚àl‚¦‚é)
 	int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 	if (isLeapYear)
@@ -210,107 +119,212 @@ bool isValidDate(const std::string& date)
 	return true;
 }
 
+class TaskManager
+{
+public:
+	std::vector<Task> tasks;
+
+	//ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚Ş
+	void load()
+	{
+		tasks.clear();
+		std::ifstream file("tasks.txt");
+
+		if (!file)
+		{
+			return;
+		}
+
+		Task task;
+		std::string doneText;
+
+		while (std::getline(file,task.name))
+		{
+			std::getline(file, task.deadline);
+			std::getline(file, doneText);
+			task.done = (doneText == "1");
+
+			tasks.push_back(task);
+		}
+
+	}
+
+
+	//ƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚é
+	void save() const
+	{
+		std::ofstream file("tasks.txt");
+		
+		if (!file)
+		{
+			std::cout << "•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½B" << std::endl;
+			return;
+		}
+
+		for (size_t i = 0; i < tasks.size(); i++)
+		{
+			file << tasks[i].name << "\n";
+			file << tasks[i].deadline << "\n";
+			file << tasks[i].done << "\n";
+		}
+	}
+	
+	//ˆê——‚ğ•\¦‚·‚é
+	void show() const
+	{
+		std::cout << "\n--- ‰Û‘èˆê—— ---" << std::endl;
+
+		if (tasks.empty())
+		{
+			std::cout << "“o˜^‚³‚ê‚½‰Û‘è‚Í‚ ‚è‚Ü‚¹‚ñB" << std::endl;
+		}
+
+		for (size_t i = 0; i < tasks.size(); i++)
+		{
+			std::cout << i + 1 << ". ";
+
+			if (tasks[i].done)
+			{
+				std::cout << "[Ï] ";
+			}
+			else
+			{
+				std::cout << "[–¢] ";
+			}
+
+			std::cout << tasks[i].name
+				<< "(ŠúŒÀ: " << tasks[i].deadline;
+
+			// Š®—¹‚µ‚Ä‚¢‚È‚¢‰Û‘è‚Ìc‚è“ú”‚ğo‚·
+			if (!tasks[i].done)
+			{
+				int days = daysLeft(tasks[i].deadline);
+
+				if (days > 0)
+				{
+					std::cout << " / ‚ ‚Æ" << days << "“ú";
+				}
+				else if (days == 0)
+				{
+					std::cout << " / ¡“ú‚Ü‚Å!";
+				}
+				else
+				{
+					std::cout << " / " << -days << "“ú’´‰ß";
+				}
+			}
+
+			std::cout << ")" << std::endl;
+		}
+	}
+};
+
+
+
 int main()
 {
 
-	std::vector<Task> tasks = loadTasks();	//èª²é¡Œåã®ãƒªã‚¹ãƒˆ èµ·å‹•æ™‚ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€
-	std::string input;	//1å›åˆ†ã®å…¥åŠ›
+	TaskManager manager;	//TaskManager‚ğ‚P‚Âì‚é
+	manager.load();
+	std::string input;	//1‰ñ•ª‚Ì“ü—Í
 
-	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ç¹°ã‚Šè¿”ã™
+	//ƒƒjƒ…[‚ğŒJ‚è•Ô‚·
 	while (true)
 	{
-		std::cout << "\n=== ãƒ¡ãƒ‹ãƒ¥ãƒ¼ ===" << std::endl;
-		std::cout << "1: èª²é¡Œã‚’è¿½åŠ " << std::endl;
-		std::cout << "2: ä¸€è¦§ã‚’è¡¨ç¤º" << std::endl;
-		std::cout << "3: èª²é¡Œã‚’å®Œäº†ã«ã™ã‚‹" << std::endl;
-		std::cout << "4: èª²é¡Œã‚’å‰Šé™¤ã™ã‚‹" << std::endl;
-		std::cout << "0: çµ‚äº†" << std::endl;
-		std::cout << "ç•ªå· >";
+		std::cout << "\n=== ƒƒjƒ…[ ===" << std::endl;
+		std::cout << "1: ‰Û‘è‚ğ’Ç‰Á" << std::endl;
+		std::cout << "2: ˆê——‚ğ•\¦" << std::endl;
+		std::cout << "3: ‰Û‘è‚ğŠ®—¹‚É‚·‚é" << std::endl;
+		std::cout << "4: ‰Û‘è‚ğíœ‚·‚é" << std::endl;
+		std::cout << "0: I—¹" << std::endl;
+		std::cout << "”Ô† >";
 		std::getline(std::cin, input);
 
 		if (input == "1")
 		{
-			//èª²é¡Œã‚’1ä»¶è¿½åŠ ã™ã‚‹
+			//‰Û‘è‚ğ1Œ’Ç‰Á‚·‚é
 			Task task;
-
-			std::cout << "èª²é¡Œå >";
-			std::getline(std::cin, task.name);
-			if (!task.name.empty())
+			while (true)
 			{
-				break;
+				std::cout << "‰Û‘è–¼ >";
+				std::getline(std::cin, task.name);
+				if (!task.name.empty())
+				{
+					break;
+				}
+				std::cout << "‰Û‘è–¼‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B" << std::endl;
 			}
-			std::cout << "èª²é¡Œåã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚" << std::endl;
 
 			while (true)
 			{
-				std::cout << "æå‡ºæœŸé™(ä¾‹: 2026/10/20) >";
+				std::cout << "’ñoŠúŒÀ(—á: 2026/10/20) >";
 				std::getline(std::cin, task.deadline);
 				
 				if (isValidDate(task.deadline))
 				{
 					break;
 				}
-				std::cout << "2026/10/20 ã®å½¢ã§ã€æ­£ã—ã„æ—¥ä»˜ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚" << std::endl;
+				std::cout << "2026/10/20 ‚ÌŒ`‚ÅA³‚µ‚¢“ú•t‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B" << std::endl;
 			}
 	
-			tasks.push_back(task);
-			std::sort(tasks.begin(), tasks.end(), compareDeadline); //æœŸé™é †ã«ä¸¦ã¹æ›¿ãˆ
-			saveTasks(tasks);
-			std::cout << "è¿½åŠ ã—ã¾ã—ãŸã€‚" << std::endl;
+			manager.tasks.push_back(task);
+			std::sort(manager.tasks.begin(), manager.tasks.end(), compareDeadline); //ŠúŒÀ‡‚É•À‚×‘Ö‚¦
+			manager.save();
+			std::cout << "’Ç‰Á‚µ‚Ü‚µ‚½B" << std::endl;
 		}
 		else if (input== "2")
 		{
-			showTasks(tasks); //èª²é¡Œã®ä¸€è¦§ã‚’è¡¨ç¤ºã™ã‚‹
+			manager.show(); //‰Û‘è‚Ìˆê——‚ğ•\¦‚·‚é
 		}
 		else if (input == "3")
 		{
-			//èª²é¡Œã‚’å®Œäº†ã«ã™ã‚‹
-			if (tasks.empty())
+			//‰Û‘è‚ğŠ®—¹‚É‚·‚é
+			if (manager.tasks.empty())
 			{
-				std::cout << "èª²é¡ŒãŒã‚ã‚Šã¾ã›ã‚“ã€‚" << std::endl;
+				std::cout << "‰Û‘è‚ª‚ ‚è‚Ü‚¹‚ñB" << std::endl;
 			}
 			else
 			{
-				showTasks(tasks); //ä¸€è¦§è¡¨ç¤º
-				std::cout << "å®Œäº†ã«ã™ã‚‹ç•ªå· >";
+				manager.show(); //ˆê——•\¦
+				std::cout << "Š®—¹‚É‚·‚é”Ô† >";
 				int num = readNumber();
 
-				if (num <1 || num > static_cast<int>(tasks.size()))
+				if (num <1 || num > static_cast<int>(manager.tasks.size()))
 				{
-					std::cout << "ãã®ç•ªå·ã®èª²é¡Œã¯ã‚ã‚Šã¾ã›ã‚“ã€‚" << std::endl;
+					std::cout << "‚»‚Ì”Ô†‚Ì‰Û‘è‚Í‚ ‚è‚Ü‚¹‚ñB" << std::endl;
 				}
 				else
 				{
-					tasks[num - 1].done = true;
-					saveTasks(tasks);
-					std::cout << tasks[num - 1].name << " ã‚’å®Œäº†ã«ã—ã¾ã—ãŸã€‚" << std::endl;
+					manager.tasks[num - 1].done = true;
+					manager.save();
+					std::cout << manager.tasks[num - 1].name << " ‚ğŠ®—¹‚É‚µ‚Ü‚µ‚½B" << std::endl;
 				}
 			}
 
 		}
 		else if (input == "4")
 		{
-			//èª²é¡Œã‚’å‰Šé™¤ã™ã‚‹
-			if (tasks.empty())
+			//‰Û‘è‚ğíœ‚·‚é
+			if (manager.tasks.empty())
 			{
-				std::cout << "èª²é¡ŒãŒã‚ã‚Šã¾ã›ã‚“ã€‚" << std::endl;
+				std::cout << "‰Û‘è‚ª‚ ‚è‚Ü‚¹‚ñB" << std::endl;
 			}
 			else
 			{
-				showTasks(tasks); //ä¸€è¦§è¡¨ç¤º
-				std::cout << "å‰Šé™¤ã™ã‚‹ç•ªå· >";
+				manager.show(); //ˆê——•\¦
+				std::cout << "íœ‚·‚é”Ô† >";
 				int num = readNumber();
 
-				if (num < 1 || num > static_cast<int>(tasks.size()))
+				if (num < 1 || num > static_cast<int>(manager.tasks.size()))
 				{
-					std::cout << "ãã®ç•ªå·ã®èª²é¡Œã¯ã‚ã‚Šã¾ã›ã‚“ã€‚" << std::endl;
+					std::cout << "‚»‚Ì”Ô†‚Ì‰Û‘è‚Í‚ ‚è‚Ü‚¹‚ñB" << std::endl;
 				}
 				else
 				{
-					std::string name = tasks[num - 1].name; //æ¶ˆã™å‰ã«åå‰ã‚’å–ã£ã¦ãŠã
-					tasks.erase(tasks.begin() + (num - 1));
-					saveTasks(tasks);
-					std::cout << name << " ã‚’å‰Šé™¤ã—ã¾ã—ãŸã€‚" << std::endl;
+					std::string name = manager.tasks[num - 1].name; //Á‚·‘O‚É–¼‘O‚ğæ‚Á‚Ä‚¨‚­
+					manager.tasks.erase(manager.tasks.begin() + (num - 1));
+					manager.save();
+					std::cout << name << " ‚ğíœ‚µ‚Ü‚µ‚½B" << std::endl;
 				}
 			}
 		}
@@ -320,7 +334,7 @@ int main()
 		}
 		else
 		{
-			std::cout << "0ï½4ã®ç•ªå·ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚" << std::endl;
+			std::cout << "0`4‚Ì”Ô†‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B" << std::endl;
 		}
 
 	}
