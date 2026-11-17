@@ -99,6 +99,53 @@ void TaskManager::show() const
 	}
 }
 
+//期限切れ・3日以内の課題を警告する
+void TaskManager::showWarnings() const
+{
+	bool found = false; //警告する課題が一つでもあったか
+
+	for (size_t i = 0; i < tasks.size(); i++)
+	{
+		//完了している課題は飛ばす
+		if (tasks[i].done)
+		{
+			continue;
+		}
+		
+		int days = daysLeft(tasks[i].deadline);
+
+		//4日以上先なら警告しないので飛ばす
+		if (days > 3)
+		{
+			continue;
+		}
+
+		//最初の1件のときだけ見出しを出す
+		if (!found)
+		{
+			std::cout << "\n!!! 注意が必要な課題 !!!" << std::endl;
+			found = true;
+		}
+
+		std::cout << "・" << tasks[i].name;
+
+		if (days < 0)
+		{
+			std::cout << "(" << -days << "日超過)" << std::endl;
+		}
+		else if (days == 0)
+		{
+			std::cout << "(今日まで!)" << std::endl;
+		}
+		else
+		{
+			std::cout << "(あと" << days << "日)" << std::endl;
+		}
+	}
+}
+
+
+
 bool TaskManager::isEmpty() const
 {
 	return tasks.empty();

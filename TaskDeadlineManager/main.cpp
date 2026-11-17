@@ -33,6 +33,7 @@ int main()
 
 	TaskManager manager;	//TaskManagerを１つ作る
 	manager.load();
+	manager.showWarnings();//起動したら最初に警告
 	std::string input;	//1回分の入力
 
 	//メニューを繰り返す

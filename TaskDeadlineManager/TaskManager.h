@@ -10,6 +10,7 @@ public:
 	void load();	//ファイルから読み込む
 	void save() const;	//ファイルに保存する
 	void show() const;	//一覧を表示する
+	void showWarnings() const;	// ★ 期限切れ・3日以内の課題を警告する
 
 	bool isEmpty() const; //課題が1件もないか
 	bool isValidNumber(int num) const; //その番号の課題があるか
