@@ -64,18 +64,21 @@ int main()
 
 			while (true)
 			{
-				std::cout << "提出期限(例: 2026/10/20) >";
-				std::getline(std::cin, task.deadline);
+				std::cout << "提出期限(例: 1020 または 2026/10/20) >";
 				
+				std::string inputDate;
+				std::getline(std::cin, inputDate);
+				task.deadline = normalizeDate(inputDate); //"2026/10/20"の形に直す
+
 				if (isValidDate(task.deadline))
 				{
 					break;
 				}
-				std::cout << "2026/10/20 の形で、正しい日付を入力してください。" << std::endl;
+				std::cout << "正しい日付を入力してください。(例: 1020 または 20261020)" << std::endl;
 			}
 	
-			manager.add(task);	//追加・並べ替え・保存はTaskManagerに任せる
-			std::cout << "追加しました。" << std::endl;
+			manager.add(task);
+			std::cout << "追加しました。(期限: " << task.deadline << ")" << std::endl;	
 		}
 		else if (input== "2")
 		{

@@ -77,3 +77,40 @@ bool isValidDate(const std::string& date)
 
 	return true;
 }
+
+std::string normalizeDate(const std::string& input)
+{
+	// 1. もう "2026/10/20" の形(10文字)なら、そのまま返す
+	if (input.size() == 10)
+	{
+		return input;
+	}
+
+	//　'/'以外が全部数字か
+	for (size_t i = 0; i < input.size(); i++)
+	{
+		if (input[i] < '0' || input[i]>'9')
+		{
+			return "";
+		}
+	}
+
+	// 3. 今年の年を取る
+	std::time_t now = std::time(nullptr);
+	std::tm todayTm = {};
+	localtime_s(&todayTm, &now);
+	int year = todayTm.tm_year + 1900;
+
+	// 4. 4桁なら:今年 + "/" + 前2文字 + "/" + 後ろ2文字
+	if (input.size() == 4)
+	{
+		return std::to_string(year) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
+	}
+	// 5. 8桁なら:前4文字 + "/" + 次の2文字 + "/" + 最後の2文字
+	if (input.size() == 8)
+	{
+		return input.substr(0, 4) + "/" + input.substr(4, 2) + "/" + input.substr(6, 2);
+	}
+	
+	return "";
+}
