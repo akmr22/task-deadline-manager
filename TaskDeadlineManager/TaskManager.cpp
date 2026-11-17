@@ -161,9 +161,22 @@ std::string TaskManager::getName(int num) const
 	return tasks[num - 1].name;
 }
 
+Task TaskManager::getTask(int num) const
+{
+	return tasks[num - 1];
+}
+
+
 void TaskManager::add(const Task& task)
 {
 	tasks.push_back(task);
+	std::sort(tasks.begin(), tasks.end(), compareDeadline);
+	save();
+}
+
+void TaskManager::update(int num, const Task& task)
+{
+	tasks[num - 1] = task;
 	std::sort(tasks.begin(), tasks.end(), compareDeadline);
 	save();
 }

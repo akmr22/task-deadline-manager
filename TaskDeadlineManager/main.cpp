@@ -30,10 +30,9 @@ int readNumber()
 
 int main()
 {
-
-	TaskManager manager;	//TaskManagerを１つ作る
+	TaskManager manager;	//TaskManagerを1つ作る
 	manager.load();
-	manager.showWarnings();//起動したら最初に警告
+	manager.showWarnings();	//起動したら最初に警告
 	std::string input;	//1回分の入力
 
 	//メニューを繰り返す
@@ -44,6 +43,7 @@ int main()
 		std::cout << "2: 一覧を表示" << std::endl;
 		std::cout << "3: 課題を完了にする" << std::endl;
 		std::cout << "4: 課題を削除する" << std::endl;
+		std::cout << "5: 課題を編集する" << std::endl;
 		std::cout << "0: 終了" << std::endl;
 		std::cout << "番号 >";
 		std::getline(std::cin, input);
@@ -52,6 +52,8 @@ int main()
 		{
 			//課題を1件追加する
 			Task task;
+
+			//空でなくなるまで聞き直す
 			while (true)
 			{
 				std::cout << "課題名 >";
@@ -63,13 +65,14 @@ int main()
 				std::cout << "課題名を入力してください。" << std::endl;
 			}
 
+			//正しい日付になるまで聞き直す
 			while (true)
 			{
-				std::cout << "提出期限(例: 1020 または 2026/10/20) >";
-				
+				std::cout << "提出期限(例: 1020 または 20261020) >";
+
 				std::string inputDate;
 				std::getline(std::cin, inputDate);
-				task.deadline = normalizeDate(inputDate); //"2026/10/20"の形に直す
+				task.deadline = normalizeDate(inputDate);	//"2026/10/20"の形に直す
 
 				if (isValidDate(task.deadline))
 				{
@@ -77,13 +80,13 @@ int main()
 				}
 				std::cout << "正しい日付を入力してください。(例: 1020 または 20261020)" << std::endl;
 			}
-	
+
 			manager.add(task);
-			std::cout << "追加しました。(期限: " << task.deadline << ")" << std::endl;	
+			std::cout << "追加しました。(期限: " << task.deadline << ")" << std::endl;
 		}
-		else if (input== "2")
+		else if (input == "2")
 		{
-			manager.show(); //課題の一覧を表示する
+			manager.show();	//課題の一覧を表示する
 		}
 		else if (input == "3")
 		{
@@ -94,7 +97,7 @@ int main()
 			}
 			else
 			{
-				manager.show(); //一覧表示
+				manager.show();	//一覧表示
 				std::cout << "完了にする番号 >";
 				int num = readNumber();
 
@@ -108,7 +111,6 @@ int main()
 					std::cout << manager.getName(num) << " を完了にしました。" << std::endl;
 				}
 			}
-
 		}
 		else if (input == "4")
 		{
@@ -119,7 +121,7 @@ int main()
 			}
 			else
 			{
-				manager.show(); //一覧表示
+				manager.show();	//一覧表示
 				std::cout << "削除する番号 >";
 				int num = readNumber();
 
@@ -129,21 +131,76 @@ int main()
 				}
 				else
 				{
-					std::string name = manager.getName(num); //消す前に名前を取っておく
+					std::string name = manager.getName(num);	//消す前に名前を取っておく
 					manager.remove(num);
 					std::cout << name << " を削除しました。" << std::endl;
 				}
 			}
 		}
-		else if (input =="0")
+		else if (input == "5")
+		{
+			//課題を編集する
+			if (manager.isEmpty())
+			{
+				std::cout << "課題がありません。" << std::endl;
+			}
+			else
+			{
+				manager.show();	//一覧表示
+				std::cout << "編集する番号 >";
+				int num = readNumber();
+
+				if (!manager.isValidNumber(num))
+				{
+					std::cout << "その番号の課題はありません。" << std::endl;
+				}
+				else
+				{
+					Task task = manager.getTask(num);	//今の課題をもらう
+
+					//課題名:空ならそのまま
+					std::cout << "新しい課題名(そのままならEnter) >";
+					std::string newName;
+					std::getline(std::cin, newName);
+					if (!newName.empty())
+					{
+						task.name = newName;
+					}
+
+					//期限:空ならそのまま、入れたら正しくなるまで聞き直す
+					while (true)
+					{
+						std::cout << "新しい提出期限(そのままならEnter) >";
+						std::string inputDate;
+						std::getline(std::cin, inputDate);
+
+						if (inputDate.empty())
+						{
+							break;
+						}
+
+						std::string newDeadline = normalizeDate(inputDate);
+						if (isValidDate(newDeadline))
+						{
+							task.deadline = newDeadline;
+							break;
+						}
+						std::cout << "正しい日付を入力してください。(例: 1020 または 20261020)" << std::endl;
+					}
+
+					manager.update(num, task);	//書き換えて並べ替えて保存
+					std::cout << "編集しました。(" << task.name << " / 期限: " << task.deadline << ")" << std::endl;
+				}
+			}
+		}
+		else if (input == "0")
 		{
 			break;
 		}
 		else
 		{
-			std::cout << "0～4の番号を入力してください。" << std::endl;
+			std::cout << "0～5の番号を入力してください。" << std::endl;
 		}
-
 	}
 
 	return 0;

@@ -15,10 +15,12 @@ public:
 	bool isEmpty() const; //課題が1件もないか
 	bool isValidNumber(int num) const; //その番号の課題があるか
 	std::string getName(int num) const; //その番号の課題名を返す
+	Task getTask(int num) const; //その番号の課題を丸ごと返す
 
 	void add(const Task& task); //課題を追加して、期限順に並べて保存
 	void complete(int num); //課題を完了にして保存
 	void remove(int num);	//課題を削除して保存
+	void update(int num, const Task& task); //その番号の課題を書き換えて、並べ替えて保存
 
 private:
 	std::vector<Task> tasks;
