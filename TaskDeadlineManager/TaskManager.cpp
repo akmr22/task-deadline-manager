@@ -34,13 +34,35 @@ void TaskManager::load()
 	Task task;
 	std::string doneText;
 
+	int skippedCount = 0; //読み込めなかった件数
+
+	// 期限と完了の行が読めなかった(ファイルが途中で終わっている)
 	while (std::getline(file, task.name))
 	{
-		std::getline(file, task.deadline);
-		std::getline(file, doneText);
-		task.done = (doneText == "1");
+		if (!std::getline(file, task.deadline) || !std::getline(file, doneText))
+		{
+			skippedCount++;
+			break;
+		}
 
+		// 中身がおかしい課題は飛ばす
+		if (task.name.empty() || !isValidDate(task.deadline) || (doneText !="0" && doneText !="1"))
+		{
+			skippedCount++;
+			continue;
+		}
+
+		task.done = (doneText == "1");
 		tasks.push_back(task);
+	}
+
+	// 手で書き換えられて順番が崩れていても大丈夫なように並べ直す
+	std::sort(tasks.begin(), tasks.end(), compareDeadline);
+
+	//飛ばした課題があれば知らせる
+	if (skippedCount > 0)
+	{
+		std::cout << "保存データに読み込めない課題が " << skippedCount << " 件ありました。(スキップしました)" << std::endl;
 	}
 }
 
