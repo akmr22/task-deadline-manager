@@ -51,7 +51,7 @@ void TaskManager::save() const
 	}
 }
 
-void TaskManager::show() const
+void TaskManager::show(bool onlyUndone) const
 {
 	std::cout << "\n--- 課題一覧 ---" << std::endl;
 
@@ -62,6 +62,11 @@ void TaskManager::show() const
 
 	for (size_t i = 0; i < tasks.size(); i++)
 	{
+		if (onlyUndone && tasks[i].done) //未完了だけかつ完了済み
+		{
+			continue;
+		}
+
 		std::cout << i + 1 << ". ";
 
 		if (tasks[i].done)
