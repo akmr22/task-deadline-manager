@@ -52,7 +52,7 @@ int main()
 		std::cout << "\n=== メニュー ===" << std::endl;
 		std::cout << "1: 課題を追加" << std::endl;
 		std::cout << "2: 一覧を表示" << std::endl;
-		std::cout << "3: 課題を完了にする" << std::endl;
+		std::cout << "3: 完了/未完了を切り替える" << std::endl;
 		std::cout << "4: 課題を削除する" << std::endl;
 		std::cout << "5: 課題を編集する" << std::endl;
 		std::cout << "6: 未完了の課題だけ表示" << std::endl;
@@ -122,7 +122,7 @@ int main()
 			else
 			{
 				manager.show();	//一覧表示
-				std::cout << "完了にする番号(Enterだけでキャンセル) >";
+				std::cout << "切り替える番号(Enterだけでキャンセル) >";
 				int num = readNumber();
 
 				if (num == 0)
@@ -135,8 +135,15 @@ int main()
 				}
 				else
 				{
-					manager.complete(num);
-					std::cout << manager.getName(num) << " を完了にしました。" << std::endl;
+					manager.toggleDone(num);
+					if (manager.getTask(num).done)
+					{
+						std::cout << manager.getName(num) << " を完了にしました。" << std::endl;
+					}	
+					else
+					{
+						std::cout << manager.getName(num) << " を未完了に戻しました。" << std::endl;
+					}
 				}
 			}
 		}

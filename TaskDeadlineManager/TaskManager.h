@@ -18,7 +18,7 @@ public:
 	Task getTask(int num) const; //その番号の課題を丸ごと返す
 
 	void add(const Task& task); //課題を追加して、期限順に並べて保存
-	void complete(int num); //課題を完了にして保存
+	void toggleDone(int num); //完了⇔未完了を切り替えて保存
 	void remove(int num);	//課題を削除して保存
 	void update(int num, const Task& task); //その番号の課題を書き換えて、並べ替えて保存
 

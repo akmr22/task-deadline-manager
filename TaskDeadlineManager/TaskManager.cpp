@@ -267,9 +267,9 @@ void TaskManager::update(int num, const Task& task)
 	save();
 }
 
-void TaskManager::complete(int num)
+void TaskManager::toggleDone(int num)
 {
-	tasks[num - 1].done = true;
+	tasks[num - 1].done = !tasks[num-1].done;	//trueならfalse falseならtrueに
 	save();
 }
 
