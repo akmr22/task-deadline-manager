@@ -35,6 +35,12 @@ int readNumber()
 
 int main()
 {
+	std::cout << "==============================" << std::endl;
+	std::cout << "  課題・提出期限管理ツール" << std::endl;
+	std::cout << "  今日: " << todayString() << std::endl;
+	std::cout << "==============================" << std::endl;
+
+
 	TaskManager manager;	//TaskManagerを1つ作る
 	manager.load();
 	manager.showWarnings();	//起動したら最初に警告

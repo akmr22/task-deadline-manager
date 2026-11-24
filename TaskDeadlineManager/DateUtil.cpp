@@ -114,3 +114,29 @@ std::string normalizeDate(const std::string& input)
 	
 	return "";
 }
+
+std::string todayString()
+{
+	std::time_t now = std::time(nullptr);
+	std::tm todayTm = {};
+	localtime_s(&todayTm, &now);
+
+	int year = todayTm.tm_year + 1900;
+	int month = todayTm.tm_mon + 1;
+	int day = todayTm.tm_mday;
+
+	//1桁なら前に0を付ける(11/5→11/05)
+	std::string monthText = std::to_string(month);
+	if (month < 10)
+	{
+		monthText = "0" + monthText;
+	}
+
+	std::string dayText = std::to_string(day);
+	if (day < 10)
+	{
+		dayText = "0" + dayText;
+	}
+
+	return std::to_string(year) + "/" + monthText + "/" + dayText;
+}
