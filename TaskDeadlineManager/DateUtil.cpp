@@ -104,7 +104,14 @@ std::string normalizeDate(const std::string& input)
 	// 4. 4桁なら:今年 + "/" + 前2文字 + "/" + 後ろ2文字
 	if (input.size() == 4)
 	{
-		return std::to_string(year) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
+		std::string date = std::to_string(year) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
+
+		//　今日より前の日付なら来年にする
+		if (date < todayString())
+		{
+			date = std::to_string(year + 1) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
+		}
+		return date;
 	}
 	// 5. 8桁なら:前4文字 + "/" + 次の2文字 + "/" + 最後の2文字
 	if (input.size() == 8)
