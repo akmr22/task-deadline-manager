@@ -106,8 +106,9 @@ std::string normalizeDate(const std::string& input)
 	{
 		std::string date = std::to_string(year) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
 
-		//　今日より前の日付なら来年にする
-		if (date < todayString())
+
+		//　今日より半年以上前の日付なら来年にする
+		if (isValidDate(date) && daysLeft(date) < -180)
 		{
 			date = std::to_string(year + 1) + "/" + input.substr(0, 2) + "/" + input.substr(2, 2);
 		}
