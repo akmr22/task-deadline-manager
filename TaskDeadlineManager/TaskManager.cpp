@@ -64,7 +64,25 @@ void TaskManager::save() const
 
 void TaskManager::show(bool onlyUndone) const
 {
-	std::cout << "\n--- 課題一覧 ---" << std::endl;
+	//未完了と期限切れの件数を数える
+	int undoneCount = 0;
+	int overdueCount = 0;
+
+	for (size_t i = 0; i < tasks.size(); i++)
+	{
+		if (!tasks[i].done)
+		{
+			undoneCount++;
+
+			if (daysLeft(tasks[i].deadline)<0)
+			{
+				overdueCount++;
+			}
+		}
+	}
+
+	std::cout << "\n--- 課題一覧(未完了 " << undoneCount 
+		<< "件 / 期限切れ " << overdueCount << "件) ---" << std::endl;
 
 	if (tasks.empty())
 	{
