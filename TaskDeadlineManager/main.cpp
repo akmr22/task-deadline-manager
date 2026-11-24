@@ -10,6 +10,11 @@ int readNumber()
 	std::string text;
 	std::getline(std::cin, text);
 
+	if (text.empty())
+	{
+		return 0;
+	}
+
 	try
 	{
 		size_t pos = 0;
@@ -53,26 +58,32 @@ int main()
 		{
 			//課題を1件追加する
 			Task task;
-
-			//空でなくなるまで聞き直す
-			while (true)
+			
+			//課題名:Enterだけならキャンセル
+			std::cout << "課題名(Enterだけでキャンセル) >";
+			std::getline(std::cin, task.name);
+			if (task.name.empty())
 			{
-				std::cout << "課題名 >";
-				std::getline(std::cin, task.name);
-				if (!task.name.empty())
-				{
-					break;
-				}
-				std::cout << "課題名を入力してください。" << std::endl;
+				std::cout << "キャンセルしました。" << std::endl;
+				continue;	//メニューに戻る
 			}
-
+			
+			// ★ 期限:Enterだけならキャンセル、変な値なら聞き直す
+			bool cancelled = false;
 			//正しい日付になるまで聞き直す
 			while (true)
 			{
-				std::cout << "提出期限(例: 1020 または 20261020) >";
+				std::cout << "提出期限(例: 1020 または 20261020、Enterだけでキャンセル) >";
 
 				std::string inputDate;
 				std::getline(std::cin, inputDate);
+
+				if (inputDate.empty())
+				{
+					cancelled = true;
+					break;
+				}
+
 				task.deadline = normalizeDate(inputDate);	//"2026/10/20"の形に直す
 
 				if (isValidDate(task.deadline))
@@ -82,6 +93,11 @@ int main()
 				std::cout << "正しい日付を入力してください。(例: 1020 または 20261020)" << std::endl;
 			}
 
+			if (cancelled)
+			{
+				std::cout << "キャンセルしました。" << std::endl;
+				continue;//メニューへ
+			}
 			manager.add(task);
 			std::cout << "追加しました。(期限: " << task.deadline << ")" << std::endl;
 		}
@@ -91,6 +107,7 @@ int main()
 		}
 		else if (input == "3")
 		{
+			manager.show();
 			//課題を完了にする
 			if (manager.isEmpty())
 			{
@@ -99,10 +116,14 @@ int main()
 			else
 			{
 				manager.show();	//一覧表示
-				std::cout << "完了にする番号 >";
+				std::cout << "完了にする番号(Enterだけでキャンセル) >";
 				int num = readNumber();
 
-				if (!manager.isValidNumber(num))
+				if (num == 0)
+				{
+					std::cout << "キャンセルしました。" << std::endl;
+				}
+				else if (!manager.isValidNumber(num))
 				{
 					std::cout << "その番号の課題はありません。" << std::endl;
 				}
@@ -123,10 +144,14 @@ int main()
 			else
 			{
 				manager.show();	//一覧表示
-				std::cout << "削除する番号 >";
+				std::cout << "削除する番号(Enterだけでキャンセル) >";
 				int num = readNumber();
 
-				if (!manager.isValidNumber(num))
+				if (num == 0)	
+				{
+					std::cout << "キャンセルしました。" << std::endl;
+				}
+				else if (!manager.isValidNumber(num))
 				{
 					std::cout << "その番号の課題はありません。" << std::endl;
 				}
@@ -148,10 +173,14 @@ int main()
 			else
 			{
 				manager.show();	//一覧表示
-				std::cout << "編集する番号 >";
+				std::cout << "編集する番号(Enterだけでキャンセル) >";
 				int num = readNumber();
 
-				if (!manager.isValidNumber(num))
+				if (num == 0)	
+				{
+					std::cout << "キャンセルしました。" << std::endl;
+				}
+				else if (!manager.isValidNumber(num))
 				{
 					std::cout << "その番号の課題はありません。" << std::endl;
 				}
