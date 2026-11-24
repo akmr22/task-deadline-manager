@@ -135,14 +135,19 @@ int main()
 				}
 				else
 				{
+					//並べ替えで番号がずれるので、切り替える前に取っておく
+					std::string name = manager.getName(num);
+					bool willBeDone = !manager.getTask(num).done;
+
 					manager.toggleDone(num);
+
 					if (manager.getTask(num).done)
 					{
-						std::cout << manager.getName(num) << " を完了にしました。" << std::endl;
+						std::cout << name << " を完了にしました。" << std::endl;
 					}	
 					else
 					{
-						std::cout << manager.getName(num) << " を未完了に戻しました。" << std::endl;
+						std::cout << name << " を未完了に戻しました。" << std::endl;
 					}
 				}
 			}

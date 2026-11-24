@@ -15,10 +15,19 @@ static void setColor(WORD color)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-//期限が早いほうを前にするための比べ方(このファイルの中だけで使う)
-static bool compareDeadline(const Task& a, const Task& b)
+//並べ替えの比べ方:未完了が先 → 期限が早い順 → 同じ期限なら名前順
+static bool compareTasks(const Task& a, const Task& b)
 {
-	return a.deadline < b.deadline;
+	if (a.done != b.done)
+	{
+		return !a.done;	//aが未完了なら前に
+	}
+	if (a.deadline != b.deadline)
+	{
+		return a.deadline < b.deadline;
+	}
+
+	return a.name < b.name;
 }
 
 void TaskManager::load()
@@ -57,7 +66,7 @@ void TaskManager::load()
 	}
 
 	// 手で書き換えられて順番が崩れていても大丈夫なように並べ直す
-	std::sort(tasks.begin(), tasks.end(), compareDeadline);
+	std::sort(tasks.begin(), tasks.end(), compareTasks);
 
 	//飛ばした課題があれば知らせる
 	if (skippedCount > 0)
@@ -256,20 +265,21 @@ Task TaskManager::getTask(int num) const
 void TaskManager::add(const Task& task)
 {
 	tasks.push_back(task);
-	std::sort(tasks.begin(), tasks.end(), compareDeadline);
+	std::sort(tasks.begin(), tasks.end(), compareTasks);
 	save();
 }
 
 void TaskManager::update(int num, const Task& task)
 {
 	tasks[num - 1] = task;
-	std::sort(tasks.begin(), tasks.end(), compareDeadline);
+	std::sort(tasks.begin(), tasks.end(), compareTasks);
 	save();
 }
 
 void TaskManager::toggleDone(int num)
 {
 	tasks[num - 1].done = !tasks[num-1].done;	//trueならfalse falseならtrueに
+	std::sort(tasks.begin(), tasks.end(), compareTasks);
 	save();
 }
 
