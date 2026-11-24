@@ -3,6 +3,17 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <Windows.h>
+
+const WORD COLOR_DEFAULT = 7;
+const WORD COLOR_GLAY = 8;
+const WORD COLOR_RED = 12;
+const WORD COLOR_YELLOW = 14;
+
+static void setColor(WORD color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
 
 //期限が早いほうを前にするための比べ方(このファイルの中だけで使う)
 static bool compareDeadline(const Task& a, const Task& b)
@@ -67,6 +78,25 @@ void TaskManager::show(bool onlyUndone) const
 			continue;
 		}
 
+		WORD color = COLOR_DEFAULT;
+		if (tasks[i].done)
+		{
+			color = COLOR_GLAY;
+		}
+		else
+		{
+			int d = daysLeft(tasks[i].deadline);
+			if (d < 0)
+			{
+				color = COLOR_RED;
+			}
+			else if (d <= 3)
+			{
+				color = COLOR_YELLOW;
+			}
+		}
+		setColor(color);
+
 		std::cout << i + 1 << ". ";
 
 		if (tasks[i].done)
@@ -101,6 +131,7 @@ void TaskManager::show(bool onlyUndone) const
 		}
 
 		std::cout << ")" << std::endl;
+		setColor(COLOR_DEFAULT);
 	}
 }
 
@@ -132,6 +163,15 @@ void TaskManager::showWarnings() const
 			found = true;
 		}
 
+		if (days < 0)
+		{
+			setColor(COLOR_RED);
+		}
+		else
+		{
+			setColor(COLOR_YELLOW);
+		}
+
 		std::cout << "・" << tasks[i].name;
 
 		if (days < 0)
@@ -146,6 +186,7 @@ void TaskManager::showWarnings() const
 		{
 			std::cout << "(あと" << days << "日)" << std::endl;
 		}
+		setColor(COLOR_DEFAULT);
 	}
 }
 

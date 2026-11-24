@@ -44,7 +44,7 @@ int main()
 		std::cout << "3: 課題を完了にする" << std::endl;
 		std::cout << "4: 課題を削除する" << std::endl;
 		std::cout << "5: 課題を編集する" << std::endl;
-		std::cout << "6:未完了の課題だけ表示" << std::endl;
+		std::cout << "6: 未完了の課題だけ表示" << std::endl;
 		std::cout << "0: 終了" << std::endl;
 		std::cout << "番号 >";
 		std::getline(std::cin, input);
