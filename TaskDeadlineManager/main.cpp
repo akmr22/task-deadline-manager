@@ -153,6 +153,7 @@ int main()
 				std::cout << "削除する番号(Enterだけでキャンセル) >";
 				int num = readNumber();
 
+
 				if (num == 0)	
 				{
 					std::cout << "キャンセルしました。" << std::endl;
@@ -163,9 +164,22 @@ int main()
 				}
 				else
 				{
-					std::string name = manager.getName(num);	//消す前に名前を取っておく
-					manager.remove(num);
-					std::cout << name << " を削除しました。" << std::endl;
+					std::string name = manager.getName(num); //消す前に名前を取っておく
+
+					//ほんとに消していいか確認
+					std::cout << "「" << name << "」を削除しますか？(y/n)";
+					std::string answer;
+					std::getline(std::cin, answer);
+
+					if (answer == "y" || answer == "Y" || answer == "ｙ" || answer == "Ｙ")
+					{
+						manager.remove(num);
+						std::cout << name << " を削除しました。" << std::endl;
+					}
+					else
+					{
+						std::cout << "キャンセルしました。" << std::endl;
+					}
 				}
 			}
 		}
